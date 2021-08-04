@@ -24,6 +24,7 @@ using DOL.GS;
 using DOL.GS.PacketHandler;
 using DOLGameServerConsole;
 using log4net;
+using System.Threading;
 
 namespace DOL.DOLServer.Actions
 {
@@ -115,6 +116,10 @@ namespace DOL.DOLServer.Actions
 			bool run = true;
 			while (run)
 			{
+                Thread.Sleep(10000);
+
+                // Remove console for Synology compatibility 
+                /*
 				Console.Write("> ");
 				string line = Console.ReadLine();
 
@@ -153,9 +158,11 @@ namespace DOL.DOLServer.Actions
 						}
 						break;
 				}
+                */
 			}
 			if (GameServer.Instance != null)
 				GameServer.Instance.Stop();
 		}
 	}
 }
+ 
