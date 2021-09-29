@@ -217,17 +217,11 @@ namespace DOL.GS.Spells
 
                 if (ServerProperties.Properties.SERV_LANGUAGE != "DE")
                 {
-                    //SpellType
                     list.Add(GetAblativeType());
-
-                    //Radius
                     if (Spell.Radius != 0)
                         list.Add(LanguageMgr.GetTranslation((Caster as GamePlayer).Client, "DelveInfo.Radius", Spell.Radius));
-
-                    //Frequency
                     if (Spell.Frequency != 0)
                         list.Add(LanguageMgr.GetTranslation((Caster as GamePlayer).Client, "DelveInfo.Frequency", (Spell.Frequency * 0.001).ToString("0.0")));
-                    //DamageType
                     if (Spell.DamageType != 0)
                         list.Add(LanguageMgr.GetTranslation((Caster as GamePlayer).Client, "DelveInfo.DamageType", Spell.DamageType));
                 }
@@ -236,7 +230,9 @@ namespace DOL.GS.Spells
 			#endregion
 		}
 
-		// for delve info
+		public override string ShortDescription 
+			=> $"Target gains a temporary health buffer that absorbs {(Spell.Damage > 0 ? Spell.Damage : 25)}% of the physical damage dealt, up to a maximum of {Spell.Value} damage.";
+
 		protected virtual string GetAblativeType()
 		{
 			return "Type: Melee Absorption";
@@ -245,13 +241,11 @@ namespace DOL.GS.Spells
 		public AblativeArmorSpellHandler(GameLiving caster, Spell spell, SpellLine line) : base(caster, spell, line) {}
 	}
 
-	// Magic Ablative
-	[SpellHandlerAttribute("MagicAblativeArmor")]
+	[SpellHandler("MagicAblativeArmor")]
 	public class MagicAblativeArmorSpellHandler : AblativeArmorSpellHandler
 	{
 		public MagicAblativeArmorSpellHandler(GameLiving caster, Spell spell, SpellLine line) : base(caster, spell, line) {}
 		
-		// Check if Melee
 		protected override bool MatchingDamageType(ref AttackData ad)
 		{
 			if (ad == null || (ad.AttackResult == GameLiving.eAttackResult.HitStyle && ad.AttackResult == GameLiving.eAttackResult.HitUnstyled))
@@ -262,28 +256,31 @@ namespace DOL.GS.Spells
 			return true;
 		}
 		
-		// for delve info
 		protected override string GetAblativeType()
 		{
 			return "Type: Magic Absorption";
 		}
+
+		public override string ShortDescription 
+			=> $"Target gains a temporary health buffer that absorbs {(Spell.Damage > 0 ? Spell.Damage : 25)}% of the magical damage dealt, up to a maximum of {Spell.Value} damage.";
 	}
-    //Both Magic/melee ablative 1.101 druids mite have a buff like this...
-    [SpellHandlerAttribute("BothAblativeArmor")]
+
+    [SpellHandler("BothAblativeArmor")]
     public class BothAblativeArmorSpellHandler : AblativeArmorSpellHandler
     {
         public BothAblativeArmorSpellHandler(GameLiving caster, Spell spell, SpellLine line) : base(caster, spell, line) { }
 
-        // Anything is absorbed with this method
         protected override bool MatchingDamageType(ref AttackData ad)
         {
             return true;
         }
 
-        // for delve info
         protected override string GetAblativeType()
         {
             return "Type: Melee/Magic Absorption";
         }
-    }
+
+		public override string ShortDescription
+			=> $"Target gains a temporary health buffer that absorbs {(Spell.Damage > 0 ? Spell.Damage : 25)}% of all damage dealt, up to a maximum of {Spell.Value} damage.";
+	}
 }

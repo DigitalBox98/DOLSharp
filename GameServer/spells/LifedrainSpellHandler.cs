@@ -16,13 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
-using System;
-using System.Collections;
 using DOL.GS.PacketHandler;
 
 namespace DOL.GS.Spells
 {
-    [SpellHandlerAttribute("Lifedrain")]
+    [SpellHandler("Lifedrain")]
     public class LifedrainSpellHandler : DirectDamageSpellHandler
     {
 		protected override void DealDamage(GameLiving target, double effectiveness)
@@ -40,9 +38,6 @@ namespace DOL.GS.Spells
 			}
 		}
 
-        /// <summary>
-        /// Uses percent of damage to heal the caster
-        /// </summary>
         public virtual void StealLife(AttackData ad)
         {
             if (ad == null) return;
@@ -67,7 +62,9 @@ namespace DOL.GS.Spells
             }
         }
 
-        // constructor
         public LifedrainSpellHandler(GameLiving caster, Spell spell, SpellLine line) : base(caster, spell, line) { }
+
+        public override string ShortDescription
+            => $"The target takes {Spell.Damage} Body damage and the attacker is healed for {Spell.LifeDrainReturn}% of the damage dealt.";
     }
 }

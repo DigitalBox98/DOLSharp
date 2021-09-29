@@ -17,19 +17,16 @@
  *
  */
 using System;
-using System.Collections;
 using DOL.GS.PacketHandler;
 using DOL.Language;
 
 namespace DOL.GS.Spells
 {
-	/// <summary>
-	///Handlers for the savage's special endurance heal that takes health instead of mana
-	/// </summary>
-	[SpellHandlerAttribute("SavageEnduranceHeal")]
+	[SpellHandler("SavageEnduranceHeal")]
 	public class SavageEnduranceHeal : EnduranceHealSpellHandler
 	{
-		public SavageEnduranceHeal(GameLiving caster, Spell spell, SpellLine line) : base(caster, spell, line) { }
+        public override string CostType => "Health";
+        public SavageEnduranceHeal(GameLiving caster, Spell spell, SpellLine line) : base(caster, spell, line) { }
 
 		protected override void RemoveFromStat(int value)
 		{
@@ -56,5 +53,7 @@ namespace DOL.GS.Spells
 			}
 			return base.CheckBeginCast(Caster);
 		}
-	}
+
+        public override string ShortDescription => $"You regain {Spell.Value} endurance.";
+    }
 }

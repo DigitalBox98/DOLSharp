@@ -288,5 +288,7 @@ namespace DOL.GS.Spells
 				return list;
 			}
 		}
+
+		public override string ShortDescription => $"Summon a pet to serve the caster. Affects monsters up to {Math.Abs(Spell.Damage)}% of your level, to a maximun of level {Spell.Value}.";
 	}
 }

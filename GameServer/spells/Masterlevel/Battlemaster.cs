@@ -167,6 +167,8 @@ namespace DOL.GS.Spells
 		}
 
         public Grapple(GameLiving caster, Spell spell, SpellLine line) : base(caster, spell, line) { }
+
+        public override string ShortDescription => "You are stunned and cannot take any actions.";
     }
     #endregion
 

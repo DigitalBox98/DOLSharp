@@ -323,5 +323,8 @@ namespace DOL.GS.Spells
 				return list;
 			}
 		}
-	}
+
+        public override string ShortDescription 
+			=> $"Brings the target back to life, restores {Spell.ResurrectHealth}% health and {Spell.ResurrectMana}% power and endurance and suffers no experience or constitution loss.";
+    }
 }

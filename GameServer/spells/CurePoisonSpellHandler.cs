@@ -16,25 +16,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
-using System;
 using System.Collections.Generic;
 
 namespace DOL.GS.Spells
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	[SpellHandlerAttribute("CurePoison")]
+	[SpellHandler("CurePoison")]
 	public class CurePoisonSpellHandler : RemoveSpellEffectHandler
 	{
-		// constructor
 		public CurePoisonSpellHandler(GameLiving caster, Spell spell, SpellLine line)
 			: base(caster, spell, line)
 		{
-			// RR4: now it's a list
 			m_spellTypesToRemove = new List<string>();
 			m_spellTypesToRemove.Add("DamageOverTime");
             m_spellTypesToRemove.Add("StyleBleeding");
-		} 
+		}
+
+		public override string ShortDescription => "All damage over time effects (such as poisons) are removed from the target.";
 	}
 }

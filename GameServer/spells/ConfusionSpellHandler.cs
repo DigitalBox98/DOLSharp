@@ -24,7 +24,7 @@ using DOL.AI.Brain;
 
 namespace DOL.GS.Spells
 {
-	[SpellHandlerAttribute("Confusion")]
+	[SpellHandler("Confusion")]
 	public class ConfusionSpellHandler : SpellHandler
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -58,7 +58,7 @@ namespace DOL.GS.Spells
 			{
 				/*
 				 *Q: What does the confusion spell do against players?
-				 *A: According to the magic man, “Confusion against a player interrupts their current action, whether it's a bow shot or spellcast.
+				 *A: According to the magic man, ï¿½Confusion against a player interrupts their current action, whether it's a bow shot or spellcast.
 				 */
 				if (Spell.Value < 0 || Util.Chance(Convert.ToInt32(Math.Abs(Spell.Value))))
 				{
@@ -181,5 +181,14 @@ namespace DOL.GS.Spells
 			}
 			return base.OnEffectExpires(effect, noMessages);
 		}
-	}
+
+        public override string ShortDescription
+		{
+			get
+			{
+				if (Spell.Value >= 0) return $"Monster target has a {Math.Abs(Spell.Value)}% chance to switch which target they are fighting.";
+				else return $"Monster target has a 100% chance to switch which target they are fighting and a 75% chance to attack an ally.";
+			}
+		}
+    }
 }

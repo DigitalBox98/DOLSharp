@@ -140,5 +140,7 @@ namespace DOL.GS.Spells
 
 			return true;
 		}
-	}
+
+        public override string ShortDescription => $"Spreadheal for {Spell.Value}";
+    }
 }
