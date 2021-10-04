@@ -84,6 +84,7 @@ namespace DOL.GS.Commands
         private static byte[] slots = { 0x15, 0x16, 0x1C, 0x19, 0x1B, 0x17, 0x1A, 0x0A, 0x0B, 0x0C, 0x0D };
 
         [ScriptLoadedEvent]
+        [Obsolete]
         public static void OnScriptCompiled(DOLEvent e, object sender, EventArgs args)
         {
             IList<ItemTemplate> temp; 
@@ -117,7 +118,7 @@ namespace DOL.GS.Commands
             for (int a = 0; a < 11; a++)
             {
                 x = 0;
-                temp = GameServer.Database.SelectObjects<ItemTemplate>( "Item_Type = @Item", new QueryParameter("@Item", slots[a]));
+                temp = GameServer.Database.SelectObjects<ItemTemplate>("Item_Type = @Item", new QueryParameter("@Item", slots[a]));
                 equip[a] = new ushort[temp.Count];
                 foreach (DataObject item in temp)
                 {
