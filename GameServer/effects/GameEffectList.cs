@@ -168,7 +168,7 @@ namespace DOL.GS.Effects
 			if (player == null || player.DBCharacter == null || GameServer.Database == null)
 				return;
 
-			var effs = DOLDB<PlayerXEffect>.SelectObjects(DB.Column("ChardID").IsEqualTo(player.ObjectId));
+			var effs = DOLDB<PlayerXEffect>.SelectObjects(DB.Column(nameof(PlayerXEffect.ChardID)).IsEqualTo(player.ObjectId));
 			if (effs == null)
 				return;
 
@@ -335,7 +335,7 @@ namespace DOL.GS.Effects
 		public virtual ICollection<T> GetAllOfType<T>() where T : IGameEffect
 		{
 			if (m_effects == null)
-				return new T[0];
+				return Array.Empty<T>();
 
 			lock (m_lockObject) // Mannen 10:56 PM 10/30/2006 - Fixing every lock ('this')
 			{
@@ -399,7 +399,7 @@ namespace DOL.GS.Effects
 		public virtual ICollection<IGameEffect> GetAllOfType(Type effectType)
 		{
 			if (m_effects == null)
-				return new IGameEffect[0];
+				return Array.Empty<IGameEffect>();
 
 			lock (m_lockObject) // Mannen 10:56 PM 10/30/2006 - Fixing every lock ('this')
 			{
@@ -433,7 +433,7 @@ namespace DOL.GS.Effects
 		public IEnumerator<IGameEffect> GetEnumerator()
 		{
 			if (m_effects == null)
-				return new IGameEffect[0].AsEnumerable().GetEnumerator();
+				return Array.Empty<IGameEffect>().AsEnumerable().GetEnumerator();
 			
 			lock (m_lockObject)
 			{

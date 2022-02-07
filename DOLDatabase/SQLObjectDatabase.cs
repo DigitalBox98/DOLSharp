@@ -36,6 +36,9 @@ namespace DOL.Database
 	{
 		private static readonly object Lock = new object();
 
+		protected DbConfig Config { get; set; }
+		protected virtual string PreCommandDirectives => "";
+
 		/// <summary>
 		/// Create a new instance of <see cref="SQLObjectDatabase"/>
 		/// </summary>
@@ -553,7 +556,7 @@ namespace DOL.Database
 		#region Select Implementation
 		[Obsolete("Use ExecuteSelectImpl(string,IEnumerable<IEnumerable<QueryParameter>>,Action<IDataReader>) instead.")]
 		protected void ExecuteSelectImpl(string SQLCommand, Action<IDataReader> Reader, Transaction.IsolationLevel Isolation)
-			=> ExecuteSelectImpl(SQLCommand, new [] { new QueryParameter[] { } }, Reader);
+			=> ExecuteSelectImpl(SQLCommand, new [] { Array.Empty<QueryParameter>() }, Reader);
 
 		[Obsolete("Use ExecuteSelectImpl(string,IEnumerable<IEnumerable<QueryParameter>>,Action<IDataReader>) instead.")]
 		protected void ExecuteSelectImpl(string SQLCommand, QueryParameter param, Action<IDataReader> Reader, Transaction.IsolationLevel Isolation)
@@ -580,7 +583,7 @@ namespace DOL.Database
 
 				if (!parameters.Any()) throw new ArgumentException("No parameter list was given.");
 
-				using (var conn = CreateConnection(ConnectionString))
+				using (var conn = CreateConnection())
 				{
 					using (var cmd = conn.CreateCommand())
 					{
@@ -654,7 +657,7 @@ namespace DOL.Database
 			{
 				repeat = false;
 
-				using (var conn = CreateConnection(ConnectionString))
+				using (var conn = CreateConnection())
 				{
 					using (var cmd = conn.CreateCommand())
 					{
@@ -714,7 +717,7 @@ namespace DOL.Database
 			while (repeat);
 		}
 
-		protected abstract DbConnection CreateConnection(string connectionsString);
+		public abstract DbConnection CreateConnection();
 
 		protected abstract void CloseConnection(DbConnection connection);
 		#endregion
@@ -746,7 +749,7 @@ namespace DOL.Database
 		/// <param name="SQLCommand">Raw Command</param>
 		protected int ExecuteNonQueryImpl(string SQLCommand)
 		{
-			return ExecuteNonQueryImpl(SQLCommand, new [] { new QueryParameter[] { }}).First();
+			return ExecuteNonQueryImpl(SQLCommand, new [] { Array.Empty<QueryParameter>() } ).First();
 		}
 		
 		/// <summary>
@@ -789,13 +792,13 @@ namespace DOL.Database
 
 				if (!parameters.Any()) throw new ArgumentException("No parameter list was given.");
 
-				using (var conn = CreateConnection(ConnectionString))
+				using (var conn = CreateConnection())
 				{
 					using (var cmd = conn.CreateCommand())
 					{
 						try
 						{
-							cmd.CommandText = SQLCommand;
+							cmd.CommandText = $"{PreCommandDirectives}{SQLCommand}";
 							conn.Open();
 							long start = (DateTime.UtcNow.Ticks / 10000);
 
@@ -867,7 +870,7 @@ namespace DOL.Database
 		/// <returns>Object Returned by Scalar</returns>
 		protected object ExecuteScalarImpl(string SQLCommand, bool retrieveLastInsertID = false)
 		{
-			return ExecuteScalarImpl(SQLCommand, new [] { new QueryParameter[] { }}, retrieveLastInsertID).First();
+			return ExecuteScalarImpl(SQLCommand, new [] { Array.Empty<QueryParameter>() }, retrieveLastInsertID).First();
 		}
 		
 		/// <summary>

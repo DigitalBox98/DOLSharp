@@ -30,9 +30,15 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <OutputPath>..\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>..\build\DOLServer\$(Configuration)\obj\</IntermediateOutputPath>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <Deterministic>false</Deterministic>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyTitle>Dawn of Light - DOLServer</AssemblyTitle>
+    <Description>Main entrypoint for starting the server</Description>
+    <Copyright>Dawn of Light Development Team</Copyright>
+    <Company>Dawn of Light Development Team</Company>
+    <Product>DAoC Server Side Emulation Package - Dawn of Light</Product>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -60,7 +66,7 @@
   <ItemGroup>
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.ServiceProcess" />
-    <PackageReference Include="log4net" Version="2.0.12" ExcludeAssets="Runtime" />
+    <PackageReference Include="log4net" Version="2.0.13" ExcludeAssets="Runtime" />
     <ProjectReference Include="..\DOLBase\DOLBase.csproj" Name="DOLBase" Private="False" ExcludeAssets="All" />
     <ProjectReference Include="..\DOLDatabase\DOLDatabase.csproj" Name="DOLDatabase" Private="False" ExcludeAssets="All" />
     <ProjectReference Include="..\GameServer\GameServer.csproj" Name="GameServer" Private="False" ExcludeAssets="All" />

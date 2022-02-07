@@ -46,10 +46,21 @@ namespace DOL.GS.PacketHandler
 	{
 		private const int MaxPacketLength = 2048;
 
-		/// <summary>
-		/// Defines a logger for this class.
-		/// </summary>
 		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		protected virtual byte ServerTypeID
+        {
+			get
+			{
+				var serverType = GameServer.Instance.Configuration.ServerType;
+				switch (serverType)
+				{
+					case eGameServerType.GST_PvP: return 1;
+					case eGameServerType.GST_PvE: return 3;
+					default: return 0;
+				}
+			}
+        }
 
 		/// <summary>
 		/// Constructs a new PacketLib for Version 1.68 clients
@@ -121,7 +132,7 @@ namespace DOL.GS.PacketHandler
 
 		public virtual void SendLoginGranted()
 		{
-			SendLoginGranted(GameServer.ServerRules.GetColorHandling(m_gameClient));
+			SendLoginGranted(ServerTypeID);
 		}
 
 		public virtual void SendLoginGranted(byte color)
@@ -251,8 +262,8 @@ namespace DOL.GS.PacketHandler
 							pak.WriteByte((byte) characters[j].Empathy);
 							pak.WriteByte((byte) characters[j].Charisma);
 							
-							var items = DOLDB<InventoryItem>.SelectObjects(DB.Column("OwnerID").IsEqualTo(characters[j].ObjectId)
-								.And(DB.Column("SlotPosition").IsGreaterOrEqualTo(10).And(DB.Column("SlotPosition").IsLessOrEqualTo(29))));
+							var items = DOLDB<InventoryItem>.SelectObjects(DB.Column(nameof(InventoryItem.OwnerID)).IsEqualTo(characters[j].ObjectId)
+								.And(DB.Column(nameof(InventoryItem.SlotPosition)).IsGreaterOrEqualTo(10).And(DB.Column(nameof(InventoryItem.SlotPosition)).IsLessOrEqualTo(29))));
 							int found = 0;
 							//16 bytes: armor model
 							for (int k = 0x15; k < 0x1D; k++)
@@ -3723,7 +3734,7 @@ namespace DOL.GS.PacketHandler
 
 		public virtual void SendRegionColorScheme()
 		{
-			SendRegionColorScheme(GameServer.ServerRules.GetColorHandling(m_gameClient));
+			SendRegionColorScheme(ServerTypeID);
 		}
 
 		public virtual void SendVampireEffect(GameLiving living, bool show)

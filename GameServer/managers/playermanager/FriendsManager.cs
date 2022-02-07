@@ -61,10 +61,10 @@ namespace DOL.GS.Friends
 			get
 			{
 				if (player == null)
-					return new string[0];
+					return Array.Empty<string>();
 
 				string[] result;
-				return PlayersFriendsListsCache.TryGetValue(player, out result) ? result : new string[0];
+				return PlayersFriendsListsCache.TryGetValue(player, out result) ? result : Array.Empty<string>();
 			}
 		}
 
@@ -99,10 +99,10 @@ namespace DOL.GS.Friends
 					log.WarnFormat("Gameplayer ({0}) is already registered in Friends Manager Cache while adding!", Player);
 			}
 
-			var offlineFriends = new FriendStatus[0];
+			var offlineFriends = Array.Empty<FriendStatus>();
 			if (friends.Any())
 			{
-				offlineFriends = Database.SelectObjects<DOLCharacters>(DB.Column("Name").IsIn(friends))
+				offlineFriends = Database.SelectObjects<DOLCharacters>(DB.Column(nameof(DOLCharacters.Name)).IsIn(friends))
 					.Select(chr => new FriendStatus(chr.Name, chr.Level, chr.Class, chr.LastPlayed)).ToArray();
 			}
 
@@ -174,7 +174,7 @@ namespace DOL.GS.Friends
 				Player.Out.SendAddFriends(new[] { Friend });
 				Player.SerializedFriendsList = this[Player];
 
-				var offlineFriend = Database.SelectObjects<DOLCharacters>(DB.Column("Name").IsEqualTo(Friend)).FirstOrDefault();
+				var offlineFriend = Database.SelectObjects<DOLCharacters>(DB.Column(nameof(DOLCharacters.Name)).IsEqualTo(Friend)).FirstOrDefault();
 
 				if (offlineFriend != null)
 				{

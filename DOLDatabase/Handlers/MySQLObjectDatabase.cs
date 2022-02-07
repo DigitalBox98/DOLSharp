@@ -23,37 +23,23 @@ using System.Linq;
 using System.Data;
 using System.Data.Common;
 
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 using DOL.Database.Connection;
-using IsolationLevel = DOL.Database.Transaction.IsolationLevel;
 
 namespace DOL.Database.Handlers
 {
 	public class MySQLObjectDatabase : SQLObjectDatabase
 	{
-		/// <summary>
-		/// Create a new instance of <see cref="MySQLObjectDatabase"/>
-		/// </summary>
-		/// <param name="ConnectionString">Database Connection String</param>
 		public MySQLObjectDatabase(string ConnectionString)
 			: base(ConnectionString)
 		{
-			// Options of MySQL connection string
-			if (!this.ConnectionString.Contains("Treat Tiny As Boolean") && !this.ConnectionString.Contains("TreatTinyAsBoolean"))
-			{
-				this.ConnectionString += ";Treat Tiny As Boolean=False";
-			}
-
-			if (!this.ConnectionString.Contains("Allow User Variables") && !this.ConnectionString.Contains("AllowUserVariables"))
-			{
-				this.ConnectionString += ";Allow User Variables=True";
-			}
-			
-			if (!this.ConnectionString.Contains("Convert Zero Datetime") && !this.ConnectionString.Contains("ConvertZeroDateTime"))
-			{
-				this.ConnectionString += ";Convert Zero Datetime=True";
-			}
+			Config = new DbConfig(ConnectionString);
+			Config.AddDefaultOption("Treat Tiny As Boolean", "False");
+			Config.AddDefaultOption("Allow User Variables", "True");
+			Config.AddDefaultOption("Convert Zero Datetime", "True");
+			Config.AddDefaultOption("SslMode", "None");
+			this.ConnectionString = Config.ConnectionString;
 		}
 		
 		#region MySQL Implementation
@@ -208,7 +194,7 @@ namespace DOL.Database.Handlers
 			try
 			{
 				ExecuteSelectImpl(string.Format("DESCRIBE `{0}`", table.TableName),
-					new[] { new QueryParameter[] { } },
+					new[] { Array.Empty<QueryParameter>() },
 					reader =>
 					{
 						while (reader.Read())
@@ -263,8 +249,8 @@ namespace DOL.Database.Handlers
 			
 			var indexes = table.Table.ExtendedProperties["INDEXES"] as Dictionary<string, DataColumn[]>;
 			
-			var indexesFields = indexes == null ? new string[] { }
-				: indexes.Select(index => string.Format("KEY `{0}` ({1})", index.Key,
+			var indexesFields = indexes == null ? Array.Empty<string>()
+                : indexes.Select(index => string.Format("KEY `{0}` ({1})", index.Key,
 			                                        string.Join(", ", index.Value.Select(col => string.Format("`{0}`", col.ColumnName)))));
 			
 			var command = string.Format("CREATE TABLE IF NOT EXISTS `{0}` ({1})", table.TableName,
@@ -309,7 +295,7 @@ namespace DOL.Database.Handlers
 			try
 			{
 				ExecuteSelectImpl(string.Format("SHOW INDEX FROM `{0}`", table.TableName),
-					new[] { new QueryParameter[] { } },
+					new[] { Array.Empty<QueryParameter>() },
 					reader =>
 					{
 						while (reader.Read())
@@ -336,7 +322,7 @@ namespace DOL.Database.Handlers
 				.Select(grp => new { grp.Key.KeyName, grp.Key.Unique, Columns = grp.Select(i => i.Item3).ToArray() }).ToArray();
 			
 			var havePrimaryIndex = existingIndexes.FirstOrDefault(ind => ind.KeyName.Equals("PRIMARY"));
-			var currentPrimaryColumn = new string[] { };
+			var currentPrimaryColumn = Array.Empty<string>();
 			if (havePrimaryIndex != null)
 				currentPrimaryColumn = havePrimaryIndex.Columns;
 			
@@ -617,10 +603,7 @@ namespace DOL.Database.Handlers
 			return MySqlDbType.Blob;
 		}
 
-		protected override DbConnection CreateConnection(string connectionsString)
-		{
-			return new MySqlConnection(ConnectionString);
-		}
+		public override DbConnection CreateConnection() => new MySqlConnection(ConnectionString);
 
 		protected override void CloseConnection(DbConnection connection)
 		{

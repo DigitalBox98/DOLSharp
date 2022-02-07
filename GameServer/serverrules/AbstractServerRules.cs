@@ -72,7 +72,7 @@ namespace DOL.GS.ServerRules
 
 			// Ban account
 			IList<DBBannedAccount> objs;
-			objs = DOLDB<DBBannedAccount>.SelectObjects(DB.Column("Type").IsEqualTo("A").Or(DB.Column("Type").IsEqualTo("B")).And(DB.Column("Account").IsEqualTo(username)));
+			objs = DOLDB<DBBannedAccount>.SelectObjects(DB.Column(nameof(DBBannedAccount.Type)).IsEqualTo("A").Or(DB.Column(nameof(DBBannedAccount.Type)).IsEqualTo("B")).And(DB.Column(nameof(DBBannedAccount.Account)).IsEqualTo(username)));
 			if (objs.Count > 0)
 			{
 				client.IsConnected = false;
@@ -83,7 +83,7 @@ namespace DOL.GS.ServerRules
 
 			// Ban IP Address or range (example: 5.5.5.%)
 			string accip = client.TcpEndpointAddress;
-			objs = DOLDB<DBBannedAccount>.SelectObjects(DB.Column("Type").IsEqualTo("I").Or(DB.Column("Type").IsEqualTo("B")).And(DB.Column("Ip").IsLike(accip)));
+			objs = DOLDB<DBBannedAccount>.SelectObjects(DB.Column(nameof(DBBannedAccount.Type)).IsEqualTo("I").Or(DB.Column(nameof(DBBannedAccount.Type)).IsEqualTo("B")).And(DB.Column(nameof(DBBannedAccount.Ip)).IsLike(accip)));
 			if (objs.Count > 0)
 			{
 				client.IsConnected = false;
@@ -725,7 +725,7 @@ namespace DOL.GS.ServerRules
 
 			// non-armors
 			string abilityCheck = null;
-			string[] otherCheck = new string[0];
+			string[] otherCheck = Array.Empty<string>();
 
 			//http://dol.kitchenhost.de/files/dol/Info/itemtable.txt
 			switch ((eObjectType)item.Object_Type)
@@ -1025,7 +1025,7 @@ namespace DOL.GS.ServerRules
 
 			eObjectType[] res = (eObjectType[])m_compatibleObjectTypes[(int)objectType];
 			if (res == null)
-				return new eObjectType[0];
+				return Array.Empty<eObjectType>();
 			return res;
 		}
 

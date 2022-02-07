@@ -403,7 +403,7 @@ namespace DOL.GS
 		/// </summary>
 		public string[] SerializedFriendsList
 		{
-			get { return DBCharacter != null ? DBCharacter.SerializedFriendsList.Split(',').Select(name => name.Trim()).Where(name => !string.IsNullOrEmpty(name)).ToArray() : new string[0]; }
+			get { return DBCharacter != null ? DBCharacter.SerializedFriendsList.Split(',').Select(name => name.Trim()).Where(name => !string.IsNullOrEmpty(name)).ToArray() : Array.Empty<string>(); }
 			set { if (DBCharacter != null) DBCharacter.SerializedFriendsList = string.Join(",", value.Select(name => name.Trim()).Where(name => !string.IsNullOrEmpty(name))); }
 		}
 		
@@ -443,7 +443,7 @@ namespace DOL.GS
 		/// </summary>
 		public string[] SerializedIgnoreList
 		{
-			get { return DBCharacter != null ? DBCharacter.SerializedIgnoreList.Split(',').Select(name => name.Trim()).Where(name => !string.IsNullOrEmpty(name)).ToArray() : new string[0]; }
+			get { return DBCharacter != null ? DBCharacter.SerializedIgnoreList.Split(',').Select(name => name.Trim()).Where(name => !string.IsNullOrEmpty(name)).ToArray() : Array.Empty<string>(); }
 			set { if (DBCharacter != null) DBCharacter.SerializedIgnoreList = string.Join(",", value.Select(name => name.Trim()).Where(name => !string.IsNullOrEmpty(name))); }
 		}
 
@@ -2749,12 +2749,9 @@ namespace DOL.GS
 			{
 				Client.Out.SendMessage(LanguageMgr.GetTranslation(Client.Account.Language, "PlayerPositionUpdateHandler.MythSafeFall"), eChatType.CT_Damaged, eChatLoc.CL_SystemWindow);
 				fallDamagePercent = mythSafeFall;
-				Out.SendMessage(LanguageMgr.GetTranslation(Client.Account.Language, "PlayerPositionUpdateHandler.FallPercent", fallDamagePercent), eChatType.CT_Damaged, eChatLoc.CL_SystemWindow);
 			}
 			if (safeFallLevel > 0 & mythSafeFall == 0)
 				Out.SendMessage(LanguageMgr.GetTranslation(Client.Account.Language, "PlayerPositionUpdateHandler.SafeFall"), eChatType.CT_Damaged, eChatLoc.CL_SystemWindow);
-			if (mythSafeFall == 0)
-				Out.SendMessage(LanguageMgr.GetTranslation(Client.Account.Language, "PlayerPositionUpdateHandler.FallPercent", fallDamagePercent), eChatType.CT_Damaged, eChatLoc.CL_SystemWindow);
 
 			Endurance -= MaxEndurance * fallDamagePercent / 100;
 			double damage = (0.01 * fallDamagePercent * (MaxHealth - 1));
@@ -2768,6 +2765,9 @@ namespace DOL.GS
 			if (mythSafeFall != 0 && damage > mythSafeFall)
 				damage = ((MaxHealth - 1) * (mythSafeFall * 0.01));
 
+			Out.SendMessage(LanguageMgr.GetTranslation(Client.Account.Language, "PlayerPositionUpdateHandler.FallingDamage"), eChatType.CT_Damaged, eChatLoc.CL_SystemWindow);
+			Out.SendMessage(LanguageMgr.GetTranslation(Client.Account.Language, "PlayerPositionUpdateHandler.FallPercent", fallDamagePercent), eChatType.CT_Damaged, eChatLoc.CL_SystemWindow);
+			Out.SendMessage("You lose endurance.", eChatType.CT_Damaged, eChatLoc.CL_SystemWindow);
 			TakeDamage(null, eDamageType.Falling, (int)damage, 0);
 
 			//Update the player's health to all other players around
@@ -10442,7 +10442,7 @@ namespace DOL.GS
 			set
 			{
 				if (value == null)
-					SerializedIgnoreList = new string[0];
+					SerializedIgnoreList = Array.Empty<string>();
 				else
 					SerializedIgnoreList = value.OfType<string>().ToArray();
 				
@@ -12680,7 +12680,7 @@ namespace DOL.GS
 			LoadQuests();
 
 			// Load Task object of player ...
-			var tasks = DOLDB<DBTask>.SelectObjects(DB.Column("Character_ID").IsEqualTo(InternalID));
+			var tasks = DOLDB<DBTask>.SelectObjects(DB.Column(nameof(DBTask.Character_ID)).IsEqualTo(InternalID));
 			if (tasks.Count == 1)
 			{
 				m_task = AbstractTask.LoadFromDatabase(this, tasks[0]);
@@ -12692,7 +12692,7 @@ namespace DOL.GS
 			}
 
 			// Load ML steps of player ...
-			var mlsteps = DOLDB<DBCharacterXMasterLevel>.SelectObjects(DB.Column("Character_ID").IsEqualTo(QuestPlayerID));
+			var mlsteps = DOLDB<DBCharacterXMasterLevel>.SelectObjects(DB.Column(nameof(DBCharacterXMasterLevel.Character_ID)).IsEqualTo(QuestPlayerID));
 			if (mlsteps.Count > 0)
 			{
 				foreach (DBCharacterXMasterLevel mlstep in mlsteps)
@@ -13397,7 +13397,7 @@ namespace DOL.GS
 			m_questListFinished.Clear();
 
 			// Scripted quests
-			var quests = DOLDB<DBQuest>.SelectObjects(DB.Column("Character_ID").IsEqualTo(QuestPlayerID));
+			var quests = DOLDB<DBQuest>.SelectObjects(DB.Column(nameof(DBQuest.Character_ID)).IsEqualTo(QuestPlayerID));
 			foreach (DBQuest dbquest in quests)
 			{
 				AbstractQuest quest = AbstractQuest.LoadFromDatabase(this, dbquest);
@@ -13411,7 +13411,7 @@ namespace DOL.GS
 			}
 
 			// Data driven quests for this player
-			var dataQuests = DOLDB<CharacterXDataQuest>.SelectObjects(DB.Column("Character_ID").IsEqualTo(QuestPlayerID));
+			var dataQuests = DOLDB<CharacterXDataQuest>.SelectObjects(DB.Column(nameof(CharacterXDataQuest.Character_ID)).IsEqualTo(QuestPlayerID));
 			foreach (CharacterXDataQuest quest in dataQuests)
 			{
 				DBDataQuest dbDataQuest = GameServer.Database.FindObjectByKey<DBDataQuest>(quest.DataQuestID);
@@ -15709,14 +15709,15 @@ namespace DOL.GS
 				.ToString();
 		}
 
-        public static GamePlayer CreateTestableGamePlayer() { return CreateTestableGamePlayer(new DefaultCharacterClass()); }
+		public static GamePlayer CreateDummy() 
+		{
+			var player = new GamePlayer();
+			player.m_characterClass = new DefaultCharacterClass();
+			player.m_dbCharacter = new DOLCharacters();
+			return player; 
+		}
 
-        public static GamePlayer CreateTestableGamePlayer(ICharacterClass charClass) { return new GamePlayer(charClass); }
-
-        private GamePlayer(ICharacterClass charClass) : base()
-        {
-            m_characterClass = charClass;
-        }
+		private GamePlayer() : base() { }
 
 		/// <summary>
 		/// Creates a new player

@@ -224,10 +224,10 @@ namespace DOL.GS
         public Region(GameTimer.TimeManager time, RegionData data)
         {
             m_regionData = data;
-            m_objects = new GameObject[0];
+            m_objects = Array.Empty<GameObject>();
             m_objectsInRegion = 0;
             m_nextObjectSlot = 0;
-            m_objectsAllocatedSlots = new uint[0];
+            m_objectsAllocatedSlots = Array.Empty<uint>();
 
             m_graveStones = new Hashtable();
 
@@ -790,8 +790,8 @@ namespace DOL.GS
                 return;
 
             Assembly gasm = Assembly.GetAssembly(typeof(GameServer));
-            var staticObjs = DOLDB<WorldObject>.SelectObjects(DB.Column("Region").IsEqualTo(ID));
-            var bindPoints = DOLDB<BindPoint>.SelectObjects(DB.Column("Region").IsEqualTo(ID));
+            var staticObjs = DOLDB<WorldObject>.SelectObjects(DB.Column(nameof(WorldObject.Region)).IsEqualTo(ID));
+            var bindPoints = DOLDB<BindPoint>.SelectObjects(DB.Column(nameof(BindPoint.Region)).IsEqualTo(ID));
             int count = mobObjs.Length + staticObjs.Count;
             if (count > 0) PreAllocateRegionSpace(count + 100);
             int myItemCount = staticObjs.Count;

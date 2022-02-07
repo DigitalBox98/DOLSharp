@@ -521,7 +521,7 @@ namespace DOL.Integration.Database
 			Assert.IsTrue(nullAdded, "Test Table Relations need an object for the Null Relation Test.");
 			
 			nullObj.ObjectId = null;
-			nullObj.Entries = new TestTableRelationsEntries[0];
+			nullObj.Entries = Array.Empty<TestTableRelationsEntries>();
 			
 			Database.FillObjectRelations(nullObj);
 
@@ -1104,7 +1104,7 @@ namespace DOL.Integration.Database
 			foreach(var obj in objs)
 			{
 				obj.ObjectId = null;
-				obj.Entries = new TestTableRelationsEntriesPrecached[0];
+				obj.Entries = Array.Empty<TestTableRelationsEntriesPrecached>();
 			}
 			
 			Database.FillObjectRelations(objs);
@@ -1156,6 +1156,41 @@ namespace DOL.Integration.Database
 			Database.FillObjectRelations(relretrieve);
 			
 			Assert.IsNull(relretrieve.Entry, "Relations Test With Precache and Primary should return null value for null local field relation...");
+		}
+
+		[Test]
+		public void SelectObject_TestFieldContainsSpecialISO88591signs_TestfieldIsUnaltered()
+		{
+			Database.RegisterDataObject(typeof(TestTable));
+			var dataObject = new TestTable();
+			dataObject.TestField = "¡¢£¤¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
+
+			AddOrReplaceObject(dataObject);
+
+			var actual = Database.FindObjectByKey<TestTable>(dataObject.ObjectId).TestField;
+			var expected = dataObject.TestField;
+			Assert.AreEqual(expected, actual);
+		}
+
+		[Test]
+		public void SelectObject_TestFieldContainsSpecialCp1252signs_TestfieldIsUnaltered()
+		{
+			Database.RegisterDataObject(typeof(TestTable));
+			var dataObject = new TestTable();
+			dataObject.TestField = "€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ";
+
+			AddOrReplaceObject(dataObject);
+
+			var actual = Database.FindObjectByKey<TestTable>(dataObject.ObjectId).TestField;
+			var expected = dataObject.TestField;
+			Assert.AreEqual(expected, actual);
+		}
+
+		private void AddOrReplaceObject<T>(T dataObject) where T : DataObject
+		{
+			var dataObjectFromDatabase = Database.FindObjectByKey<T>(dataObject.ObjectId);
+			if (dataObjectFromDatabase != null) Database.DeleteObject(dataObject);
+			Database.AddObject(dataObject);
 		}
 	}
 }

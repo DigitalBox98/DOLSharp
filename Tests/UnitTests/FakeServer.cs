@@ -21,6 +21,8 @@ namespace DOL.UnitTests.Gameserver
         public override void SendUpdateMaxSpeed() { }
         public override void SendEncumberance() { }
         public override void SendStatusUpdate() { }
+        public override void SendInventorySlotsUpdate(ICollection<int> slots) { }
+        public override void SendUpdateCraftingSkills() { }
     }
 
     public class FakeRegion : Region
@@ -57,7 +59,7 @@ namespace DOL.UnitTests.Gameserver
 
         protected override IObjectDatabase DataBaseImpl => database;
         protected override void CheckAndInitDB() { }
-        public override byte[] AcquirePacketBuffer() => new byte[] { };
+        public override byte[] AcquirePacketBuffer() => Array.Empty<byte>();
         public void SetDatabase(IObjectDatabase database) { this.database = database; }
 
         public static void Load() => LoadTestDouble(new FakeServer());
@@ -97,7 +99,7 @@ namespace DOL.UnitTests.Gameserver
         public IList<TObject> SelectObjects<TObject>(string whereExpression, IsolationLevel isolation) where TObject : DataObject => throw new NotImplementedException();
 
         public TObject SelectObject<TObject>(WhereClause whereClause) where TObject : DataObject => (TObject)SelectObjectReturns.FirstOrDefault();
-        public IList<TObject> SelectObjects<TObject>(WhereClause whereClause) where TObject : DataObject => (IList<TObject>)SelectObjectReturns;
+        public IList<TObject> SelectObjects<TObject>(WhereClause whereClause) where TObject : DataObject => new List<TObject>();
         public IList<IList<TObject>> MultipleSelectObjects<TObject>(IEnumerable<WhereClause> whereClauseBatch) where TObject : DataObject => throw new NotImplementedException();
 
         public bool UpdateInCache<TObject>(object key) where TObject : DataObject => false;

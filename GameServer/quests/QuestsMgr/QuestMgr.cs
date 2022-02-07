@@ -87,7 +87,7 @@ namespace DOL.GS.Quests
 								BindingFlags.InvokeMethod,
 								null,
 								null,
-								new object[] { });
+                                Array.Empty<object>() );
 						}
                     }
                 }
@@ -143,7 +143,7 @@ namespace DOL.GS.Quests
 				string tempID = Convert.ToString(identifier);
 
                 // TODO: Dirty Hack this should be done better
-                var mob = DOLDB<Mob>.SelectObject(DB.Column("Mob_ID").IsEqualTo(tempID).Or(DB.Column("Name").IsEqualTo(tempID)));
+                var mob = DOLDB<Mob>.SelectObject(DB.Column("Mob_ID").IsEqualTo(tempID).Or(DB.Column(nameof(Mob.Name)).IsEqualTo(tempID)));
 
                 GameNPC[] livings = WorldMgr.GetNPCsByName(mob.Name,(eRealm) mob.Realm);
 
@@ -206,7 +206,7 @@ namespace DOL.GS.Quests
 			{
 				string tempID = Convert.ToString(identifier);
 
-                var mob = DOLDB<Mob>.SelectObject(DB.Column("Mob_ID").IsEqualTo(tempID).Or(DB.Column("Name").IsEqualTo(tempID)));
+                var mob = DOLDB<Mob>.SelectObject(DB.Column("Mob_ID").IsEqualTo(tempID).Or(DB.Column(nameof(Mob.Name)).IsEqualTo(tempID)));
 
 				GameNPC[] npcs = WorldMgr.GetNPCsByName(mob.Name,(eRealm) mob.Realm);
 
@@ -325,7 +325,7 @@ namespace DOL.GS.Quests
                     {
                         try
                         {
-                            rquest = (RewardQuest)asm.CreateInstance(questType.FullName, false, BindingFlags.CreateInstance, null, new object[] { }, null, null);
+                            rquest = (RewardQuest)asm.CreateInstance(questType.FullName, false, BindingFlags.CreateInstance, null, Array.Empty<object>(), null, null);
                         }
                         catch (Exception e)
                         {

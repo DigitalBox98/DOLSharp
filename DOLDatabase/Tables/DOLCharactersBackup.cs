@@ -176,7 +176,7 @@ namespace DOL.Database
 			// Copy Custom Params
 			this.CustomParams = character.CustomParams != null
 				? character.CustomParams.Select(param => new DOLCharactersBackupXCustomParam(param.DOLCharactersObjectId, param.KeyName, param.Value)).ToArray()
-				: new DOLCharactersBackupXCustomParam[] { } ;
+				: Array.Empty<DOLCharactersBackupXCustomParam>();
 		}
 
 		/// <summary>
@@ -232,7 +232,7 @@ namespace DOL.Database
 		/// <summary>
 		/// List of Custom Params for this Character Backup
 		/// </summary>
-		[Relation(LocalField = "DOLCharacters_ID", RemoteField = "DOLCharactersObjectId", AutoLoad = true, AutoDelete = true)]
+		[Relation(LocalField = "DOLCharacters_ID", RemoteField = nameof( DOLCharactersBackupXCustomParam.DOLCharactersObjectId ), AutoLoad = true, AutoDelete = true)]
 		public new DOLCharactersBackupXCustomParam[] CustomParams;
 	}
 	
